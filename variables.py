@@ -22,9 +22,8 @@ import numpy as np
 ### (II) non-emitting renewable energy source.             ###
 
 
-# Intrinsic energy density, arbitrary quantity measuring how
-# much energy can be found within one unit of the energy source
-time_length = 100
+# Time extent for the full simulation
+time_length = 150
 
 ##############################################################
 ##########   I - Non-renewable energy hypotheses   ###########
@@ -64,6 +63,9 @@ fin_res_abun = 20
 ##############################################################
 ###########   II - Renewable energy hypotheses   #############
 ##############################################################
+
+# Time lag with respect to the beginning of the simulation
+inf_res_time_lag = 40
 
 #################   a) GEP hypotheses   #####################
 

@@ -26,58 +26,62 @@ if __name__ == "__main__":
     """
 
     ###############################################################
-    #### I - Non-renewable variables derived from variables.py ####
+    ####### I - Defining and initializing all the variables #######
     ###############################################################
 
-    # Create an empty dataframe
+    # Creating all the dataframes variables
+    # Finite energy resource
     fin_res = pd.DataFrame()
 
-    # Set the time dimension
-    fin_res = func.set_df_time(fin_res, var.time_length)
+    # Infinite energy resource (ideal)
+    inf_res = pd.DataFrame()
+
+    # GHG variables influenced by finite energy resource
+    ghg_atm = pd.DataFrame()
+
+    # Infinite energy resource (natural variability)
+    inf_res_var = pd.DataFrame()
+    
+    # Infinite energy resource (natural variability +
+    # GHG concentration increase-induced climate change influence)
+    inf_res_cc = pd.DataFrame()
+
+    # Coupled (Finite + lagged Infinite) energy resource
+    coupled_res = pd.DataFrame()
+
+    # Creating a list with all the variables
+    var_list = [fin_res, inf_res, ghg_atm, inf_res_var, inf_res_cc, coupled_res]
+
+    # Initializing all the variables with a time vector
+    var_list = func.set_df_time(var_list, var.time_length)
+    
+    ###############################################################
+    #### II - Non-renewable variables derived from variables.py ###
+    ###############################################################
 
     # Compute eroi and erde
     fin_res = func.compute_fin_res(fin_res, var.fin_res_dens, var.fin_res_avail, var.fin_res_peak_time, var.fin_res_min_erde, var.fin_res_abun)
 
     
     ###############################################################
-    ##### II - Renewable variables derived from variables.py ######
+    ##### III - Renewable variables derived from variables.py #####
     ###############################################################
-
-    # Create an empty dataframe
-    inf_res = pd.DataFrame()
-
-    # Set the time dimension
-    inf_res = func.set_df_time(inf_res, var.time_length)
 
     # Compute eroi and erde
     inf_res = func.compute_inf_res(inf_res, var.inf_res_max_ener, var.inf_res_avail, var.inf_res_min_erde_sys, var.inf_res_time_best_tech, var.inf_res_infra_deploy, var.inf_res_inter_coop, var.inf_res_time_infra_tech, var.inf_res_time_infra_deploy)
 
     
     ###############################################################
-    ######## III - GHG variables derived from variables.py ########
+    ######### IV - GHG variables derived from variables.py ########
     ###############################################################
-
-    # Create an empty dataframe
-    ghg_atm = pd.DataFrame()
-
-    # Set the time dimension
-    ghg_atm = func.set_df_time(ghg_atm, var.time_length)
 
     # Compute ghg variables
     ghg_atm = func.compute_ghg_atm(ghg_atm, fin_res, var.ghg_max_unit_emis, var.ghg_emis_intens, var.ghg_disint_cst, var.ghg_preind_conc)
 
     
     ##############################################################
-    #####  IV - Current renewable energy sources case study  #####
+    ######  V - Current renewable energy sources case study  #####
     ##############################################################
-
-    # Create an empty dataframe
-    inf_res_var = pd.DataFrame()
-    inf_res_cc = pd.DataFrame()
-
-    # Set the time dimension
-    inf_res_var = func.set_df_time(inf_res_var, var.time_length)
-    inf_res_cc = func.set_df_time(inf_res_cc, var.time_length)
 
     # Compute inf_res_var variables
     inf_res_var = func.compute_inf_res_var(inf_res_var, inf_res, var.var_erde_loss_rate)
@@ -87,7 +91,7 @@ if __name__ == "__main__":
 
     
     ######################################
-    ############  V - Plots  #############
+    ###########  VI - Plots  #############
     ######################################
     
     # Ploting energy variables time evolution for a finite energy

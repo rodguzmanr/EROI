@@ -19,33 +19,35 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 
-def set_df_time(dataframe, time_length):
-    """Function to set the energy resources time evolution extent
-       considered for the simulation.
+def set_df_time(var_list, time_length):
+    """Function to initialize the time variable considered for
+       the simulation for each variable.
 
     Parameters
     ----------   
-    dataframe : DataFrame (Python pandas object)
-        Structured dataset for a given set of variables (void).
+    var_list : list (Python object)
+        List with all the dataframes needing the time variable.
 
     time_length : int
         Number of time steps for the time vector.
 
     Returns
     -------
-    dataframe : DataFrame (Python pandas object)
-        Updated structured dataset (time variable has been added)
+    var_list : list (Python object)
+        List with all the updated dataframes (time variable
+        has been added).
 
     """
 
     # Defining the time vector
     time_vect = np.arange(time_length)
 
-    # Setting the time variable in the dataframe
-    dataframe['time'] = time_vect
+    # Setting the time variable for each dataframe
+    for var in var_list:
+        var['time'] = time_vect
 #    energy_res = energy_res.set_index('time')
 
-    return dataframe
+    return var_list
 
 
 def compute_fin_res(fin_res, fin_res_dens, fin_res_avail, fin_res_peak_time, fin_res_min_erde, fin_res_abun):
