@@ -50,6 +50,35 @@ def set_df_time(var_list, time_length):
     return var_list
 
 
+def compute_eroi_and_net(energy_res):
+    """Function to compute eroi and net for any given energy
+       dataframe already having erde and gross energy.
+
+    Parameters
+    ----------   
+    energy_res : DataFrame (Python pandas object)
+        Structured dataset of different energy variables time series
+        for a given type of energy resource.
+
+    Returns
+    -------
+    energy_res : DataFrame (Python pandas object)
+        Updated energy dataframe, eroi and net energy have been
+        derived from erde and gross variables.
+
+    """
+
+    # > < : ces signes ne marchent pas sur mon clavier...
+
+    # Computing eroi for this finite energy source
+    energy_res['eroi'] = energy_res['gross']/energy_res['erde']
+
+    # Computing net for this finite energy source
+    energy_res['net'] = energy_res['erde']*( energy_res['eroi']-1 )
+
+    return energy_res
+
+
 def compute_fin_res(fin_res, fin_res_dens, fin_res_avail, fin_res_peak_time, fin_res_min_erde, fin_res_abun):
     """Function to compute the time-dependent variables corresponding
        to the finite energy resource following the model hypotheses.
@@ -84,19 +113,14 @@ def compute_fin_res(fin_res, fin_res_dens, fin_res_avail, fin_res_peak_time, fin
 
     """
 
-    # > < : ces signes ne marchent pas sur mon clavier...
-
     # Computing erde for this finite energy source
     fin_res['erde'] = fin_res_min_erde*np.exp(fin_res['time']/fin_res_abun)
     
-    # Computing eroi for this finite energy source
+    # Computing gross for this finite energy source
     fin_res['gross'] = fin_res_dens*( 1/(fin_res_avail*np.sqrt(2*np.pi)) )*np.exp( -((fin_res['time']-fin_res_peak_time)**2)/(2*fin_res_avail**2) )
 
-    # Computing eroi for this finite energy source
-    fin_res['eroi'] = fin_res['gross']/fin_res['erde']
-
-    # Computing net for this finite energy source
-    fin_res['net'] = fin_res['erde']*( fin_res['eroi']-1 )
+    # Computing eroi and net for this finite energy source
+    fin_res = compute_eroi_and_net(fin_res)
 
     return fin_res
 
@@ -147,18 +171,13 @@ def compute_inf_res(inf_res, inf_res_max_ener, inf_res_avail, inf_res_min_erde_s
     """
 
     # Computing erde for this infinite energy source
-    inf_res['erde'] = inf_res['time']
     inf_res['erde'] = inf_res_min_erde_sys*(1-np.exp(-inf_res['time']/inf_res_time_best_tech)) + inf_res_infra_deploy*np.sin(inf_res['time']/inf_res_inter_coop)*np.exp(-inf_res['time']/inf_res_time_infra_tech)
 
     # Computing gross production for this infinite energy source
-    inf_res['gross'] = inf_res['time']
     inf_res['gross'] = inf_res_max_ener*( 1-np.exp(-inf_res['time']/inf_res_time_infra_deploy) )
 
-    # Computing eroi for this finite energy source
-    inf_res['eroi'] = inf_res['gross']/inf_res['erde']
-
-    # Computing net for this finite energy source
-    inf_res['net'] = inf_res['erde']*( inf_res['eroi']-1 )
+    # Computing eroi and net for this finite energy source
+    inf_res = compute_eroi_and_net(inf_res)
     
     return inf_res
 
@@ -196,14 +215,13 @@ def compute_ghg_atm(ghg_atm, fin_res, ghg_max_unit_emis, ghg_emis_intens, ghg_di
     """
 
     # Computing emissions coming from the finite energy source
-    ghg_atm['emis'] = ghg_atm['time']
     ghg_atm['emis'] = ghg_max_unit_emis*np.exp(-ghg_atm['time']/ghg_emis_intens)*fin_res['gross']
 
     # Computing the GHG atmospheric concentration derived from
     # the emissions
-    ghg_atm['conc'] = ghg_atm['time']
-    # Initializing
+    # Initializing first time step
     ghg_atm.loc[0, 'conc'] = ghg_preind_conc
+    # Recursive computation for the full time series
     for i in ghg_atm['time'][1::]:
         ghg_atm.loc[i, 'conc'] = ghg_atm.loc[i-1, 'conc']*np.exp(-ghg_atm.loc[i-1, 'time']/ghg_disint_cst) + ghg_atm.loc[i, 'emis']
     
@@ -241,17 +259,13 @@ def compute_inf_res_var(inf_res_var, inf_res, var_erde_loss_rate):
     """
 
     # Computing erde for this infinite energy source
-    inf_res_var['erde'] = inf_res_var['time']
     inf_res_var['erde'] = inf_res['erde']*( 1+(var_erde_loss_rate/100) )
 
     # Computing gross production for this infinite energy source
     inf_res_var['gross'] = inf_res['gross']
 
-    # Computing eroi for this finite energy source
-    inf_res_var['eroi'] = inf_res_var['gross']/inf_res_var['erde']
-
-    # Computing net for this finite energy source
-    inf_res_var['net'] = inf_res_var['erde']*( inf_res_var['eroi']-1 )
+    # Computing eroi and net for this natural variability scenario
+    inf_res_var = compute_eroi_and_net(inf_res_var)
     
     return inf_res_var
 
@@ -286,17 +300,13 @@ def compute_inf_res_cc(inf_res_cc, inf_res_var, ghg_atm):
     """
 
     # Computing erde for this infinite energy source
-    inf_res_cc['erde'] = inf_res_cc['time']
     inf_res_cc['erde'] = inf_res_var['erde']*( 1+((ghg_atm['conc']-ghg_atm['conc'][0])/ghg_atm['conc'][0]) )
 
     # Computing gross production for this infinite energy source
     inf_res_cc['gross'] = inf_res_var['gross']
 
-    # Computing eroi for this finite energy source
-    inf_res_cc['eroi'] = inf_res_cc['gross']/inf_res_cc['erde']
-
-    # Computing net for this finite energy source
-    inf_res_cc['net'] = inf_res_cc['erde']*( inf_res_cc['eroi']-1 )
+    # Computing eroi and net for this climate change scenario
+    inf_res_cc = compute_eroi_and_net(inf_res_cc)
     
     return inf_res_cc
 
