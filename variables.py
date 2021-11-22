@@ -23,7 +23,10 @@ import numpy as np
 
 
 # Time extent for the full simulation
-time_length = 150
+time_length = 500
+
+# Current time
+current_time = 100
 
 ##############################################################
 ##########   I - Non-renewable energy hypotheses   ###########
@@ -37,14 +40,14 @@ time_length = 150
 
 # Resource availability, arbitrary quantity measuring how
 # easily available the resource is throughout the world
-fin_res_avail = 15
+fin_res_avail = 50
 
 # Intrinsic energy density, arbitrary quantity measuring how
 # much energy can be found within one unit of the energy source
-fin_res_dens = 2000
+fin_res_dens = 3000
 
 # EROI peak, arbitrary moment in time where the EROI curve peaks
-fin_res_peak_time = 50
+fin_res_peak_time = 150
 
 #################   b) ERDE hypotheses   #####################
 
@@ -53,11 +56,11 @@ fin_res_peak_time = 50
 # begining of exploiting this resource follows an exponential.
 
 # Minimum energy required to start delivering the resource energy
-fin_res_min_erde = 0.5
+fin_res_min_erde = 1
 
 # Energy abundance, arbitrary quantity measuring how abundant
 # the resource is throughout the world
-fin_res_abun = 20
+fin_res_abun = 100
 
 
 ##############################################################
@@ -65,7 +68,7 @@ fin_res_abun = 20
 ##############################################################
 
 # Time lag with respect to the beginning of the simulation
-inf_res_time_lag = 40
+inf_res_time_lag = 100 # 100, 150, 200
 
 #################   a) GEP hypotheses   #####################
 
@@ -77,9 +80,8 @@ inf_res_time_lag = 40
 # worldwide sustainable system
 inf_res_max_ener = 30
 
-# Resource availability, arbitrary quantity measuring how
-# easily available the resource is throughout the world
-inf_res_avail = 100
+# Time required to fully deploy the worldwide infrastructure
+inf_res_time_infra_deploy = 80
 
 #################   b) ERDE hypotheses   #####################
 
@@ -94,24 +96,21 @@ inf_res_min_erde_sys = 5
 # Minimum time required to achieve best technological
 # performance, arbitrary quantity measuring the transforming
 # performance of a resource energy unit
-inf_res_time_best_tech = 1
+inf_res_time_best_tech = 50
 
 # International cooperation level, arbitrary quantity measuring
-# how easy international relatioships are to develop the
+# how easy international relationships are to develop the
 # required infrastructure to be deployed
-inf_res_inter_coop = 100
+inf_res_inter_coop = 500
 
 # Worldwide deployment required, arbitrary quantity measuring
 # how widely the technological deployment is needed before 
 # the resource can be exploited at its full potential
-inf_res_infra_deploy = 500
+inf_res_infra_deploy = 100
 
 # Minimum time required to achieve best technological
 # performance for the infrastructure to be deployed
-inf_res_time_infra_tech = 10
-
-# Time required to fully deploy the worldwide infrastructure
-inf_res_time_infra_deploy = 20
+inf_res_time_infra_tech = 50
 
 ##############################################################
 #########   III - Greenhouse gas (GHG) hypotheses   ##########
@@ -130,7 +129,7 @@ ghg_max_unit_emis = 1
 # Intrinsic emission intensity, arbitrary quantity measuring how
 # difficult is to make the GHG emissions decrease with time
 # due to efficiency, technological development, etc
-ghg_emis_intens = 30
+ghg_emis_intens = 100
 
 ############   b) GHG concentration hypotheses   #############
 
@@ -141,13 +140,16 @@ ghg_emis_intens = 30
 
 # GHG disintegration constant, arbitrary quantity measuring
 # how slowly the GHG gets caught up by natural sinks 
-ghg_disint_cst = 2e4
+ghg_disint_cst = 4e5
 
 # Preindustrial GHG concentration, arbitrary quantity defining
 # how much GHG was in the atmosphere before starting to consume
 # the non-renewable energy resource
 ghg_preind_conc = 280
 
+# Constant estimating the impact on the environment caused by
+# the GHG concentration increase in the atmosphere
+ghg_impact_factor = 0.2
 
 ##############################################################
 ####   IV - Current renewable energy sources case study   ####
@@ -159,6 +161,6 @@ ghg_preind_conc = 280
 
 # Efficiency loss in energy production due to the intrisic
 # unpredictability (variability) of the renewable energy source
-var_erde_loss_rate = 20.
+var_erde_loss_rate = 30.
 
 

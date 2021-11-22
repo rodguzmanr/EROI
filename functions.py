@@ -122,10 +122,19 @@ def compute_fin_res(fin_res, fin_res_dens, fin_res_avail, fin_res_peak_time, fin
     # Computing eroi and net for this finite energy source
     fin_res = compute_eroi_and_net(fin_res)
 
+    # Setting to zero unrealistic values (eroi and net << 0)
+    for i in np.arange(len(fin_res['time'])):
+        if ( ((fin_res['eroi'][i+1]-fin_res['eroi'][i]) < 0) and (fin_res['net'][i] < 0) ):
+            break
+    # Except for the time variable
+    for var in fin_res.columns:
+        if var != 'time':
+            fin_res.loc[i:, var] = 0
+
     return fin_res
 
 
-def compute_inf_res(inf_res, inf_res_max_ener, inf_res_avail, inf_res_min_erde_sys, inf_res_time_best_tech, inf_res_infra_deploy, inf_res_inter_coop, inf_res_time_infra_tech, inf_res_time_infra_deploy):
+def compute_inf_res(inf_res, inf_res_max_ener, inf_res_time_infra_deploy, inf_res_min_erde_sys, inf_res_time_best_tech, inf_res_infra_deploy, inf_res_inter_coop, inf_res_time_infra_tech):
     """Function to compute the time-dependent variables corresponding
        to the infinite energy resource following the model hypotheses.
 
@@ -138,8 +147,8 @@ def compute_inf_res(inf_res, inf_res_max_ener, inf_res_avail, inf_res_min_erde_s
     inf_res_max_ener : float
         Maximum energy per time unit willing to be reached.
 
-    inf_res_avail : float
-        Worldwide resource availability.
+    inf_res_time_infra_deploy : float
+        Time required to fully deploy the worldwide infrastructure.
 
     inf_res_min_erde_sys : float
         Minimum system energy required.
@@ -158,9 +167,6 @@ def compute_inf_res(inf_res, inf_res_max_ener, inf_res_avail, inf_res_min_erde_s
         Minimum time required to achieve best infrastructure
         technological performance.
 
-    inf_res_time_infra_deploy : float
-        Time required to fully deploy the worldwide infrastructure.
-
     Returns
     -------
     inf_res : DataFrame (Python pandas object)
@@ -171,7 +177,7 @@ def compute_inf_res(inf_res, inf_res_max_ener, inf_res_avail, inf_res_min_erde_s
     """
 
     # Computing erde for this infinite energy source
-    inf_res['erde'] = inf_res_min_erde_sys*(1-np.exp(-inf_res['time']/inf_res_time_best_tech)) + inf_res_infra_deploy*np.sin(inf_res['time']/inf_res_inter_coop)*np.exp(-inf_res['time']/inf_res_time_infra_tech)
+    inf_res['erde'] = inf_res_min_erde_sys*(1-np.exp(-inf_res['time']/inf_res_time_best_tech)) + inf_res_infra_deploy*np.sin(2*np.pi*inf_res['time']/inf_res_inter_coop)*np.exp(-inf_res['time']/inf_res_time_infra_tech)
 
     # Computing gross production for this infinite energy source
     inf_res['gross'] = inf_res_max_ener*( 1-np.exp(-inf_res['time']/inf_res_time_infra_deploy) )
@@ -180,6 +186,48 @@ def compute_inf_res(inf_res, inf_res_max_ener, inf_res_avail, inf_res_min_erde_s
     inf_res = compute_eroi_and_net(inf_res)
     
     return inf_res
+
+
+def compute_inf_res_lag(inf_res_lag, inf_res, inf_res_time_lag):
+    """Function to compute the time-dependent variables corresponding
+       to the infinite energy resource following the model hypotheses.
+
+    Parameters
+    ----------   
+    inf_res_lag : DataFrame (Python pandas object)
+        Structured dataset of different energy variables time series
+        (initialized) for a time-lagged infinite energy resource.
+
+    inf_res : DataFrame (Python pandas object)
+        Structured dataset of different energy variables time series
+        for an infinite energy resource.
+
+    inf_res_time_lag : int
+        Time lag with respect to the beginning of the simulation.
+
+    Returns
+    -------
+    inf_res_lag : DataFrame (Python pandas object)
+        Updated structured dataset of different energy variables time
+        series (eroi and erde have been added) for a time_lagged
+        infinite energy resource.
+
+    """
+
+    # Computing erde for this time-lagged infinite energy source
+    a = np.zeros(len(inf_res['time']))
+    a[inf_res_time_lag:] = inf_res['erde'][:-inf_res_time_lag]
+    inf_res_lag['erde'] = a
+    
+    # Computing gross for this time-lagged infinite energy source
+    b = np.zeros(len(inf_res['time']))
+    b[inf_res_time_lag:] = inf_res['gross'][:-inf_res_time_lag]
+    inf_res_lag['gross'] = b
+    
+    # Computing eroi and net for this finite energy source
+    inf_res_lag = compute_eroi_and_net(inf_res_lag)
+    
+    return inf_res_lag
 
 
 def compute_ghg_atm(ghg_atm, fin_res, ghg_max_unit_emis, ghg_emis_intens, ghg_disint_cst, ghg_preind_conc):
@@ -270,7 +318,7 @@ def compute_inf_res_var(inf_res_var, inf_res, var_erde_loss_rate):
     return inf_res_var
 
 
-def compute_inf_res_cc(inf_res_cc, inf_res_var, ghg_atm):
+def compute_inf_res_cc(inf_res_cc, inf_res_var, ghg_atm, ghg_impact_factor):
     """Function to compute the time-dependent variables corresponding
        to the infinite energy resource following the model hypotheses.
 
@@ -289,6 +337,10 @@ def compute_inf_res_cc(inf_res_cc, inf_res_var, ghg_atm):
     ghg_atm : DataFrame (Python pandas object)
         Structured dataset of the GHG variables.
 
+    ghg_impact_factor : float
+        Constant estimating the impact on the environment caused by
+        the GHG concentration increase in the atmosphere.
+
     Returns
     -------
     inf_res_cc : DataFrame (Python pandas object)
@@ -300,7 +352,7 @@ def compute_inf_res_cc(inf_res_cc, inf_res_var, ghg_atm):
     """
 
     # Computing erde for this infinite energy source
-    inf_res_cc['erde'] = inf_res_var['erde']*( 1+((ghg_atm['conc']-ghg_atm['conc'][0])/ghg_atm['conc'][0]) )
+    inf_res_cc['erde'] = inf_res_var['erde']*( 1+(ghg_impact_factor*(ghg_atm['conc']-ghg_atm['conc'][0])/ghg_atm['conc'][0]) )
 
     # Computing gross production for this infinite energy source
     inf_res_cc['gross'] = inf_res_var['gross']
@@ -311,7 +363,47 @@ def compute_inf_res_cc(inf_res_cc, inf_res_var, ghg_atm):
     return inf_res_cc
 
 
-def plot_energy_evol(fig_num, energy_type, energy_res):
+def compute_coupled_res(coupled_res, fin_res, inf_res_lag):
+    """Function to compute the time-dependent variables corresponding
+       to the coupled (finite + infinite) energy resource following
+       the model hypotheses.
+
+    Parameters
+    ----------   
+    coupled_res : DataFrame (Python pandas object)
+        Structured dataset of different energy variables time series
+        combining a finite and an infinite energy resource where
+        the latter starts to be developed with a time lag.
+
+    fin_res : DataFrame (Python pandas object)
+        Structured dataset of different energy variables time series
+        for an finite energy resource.
+
+    inf_res_lag : DataFrame (Python pandas object)
+        Structured dataset of different energy variables time series
+        for a time-lagged infinite energy resource.
+
+    Returns
+    -------
+    coupled_res : DataFrame (Python pandas object)
+        Updated coupled_res variable (erde, gross, eroi and net
+        have been added).
+
+    """
+
+    # Computing erde for this coupled energy source
+    coupled_res['erde'] = fin_res['erde'] + inf_res_lag['erde']
+
+    # Computing gross production for this infinite energy source
+    coupled_res['gross'] = fin_res['gross'] + inf_res_lag['gross']
+
+    # Computing eroi and net for this climate change scenario
+    coupled_res = compute_eroi_and_net(coupled_res)
+    
+    return coupled_res
+
+
+def plot_energy_evol(fig_num, energy_type, energy_res, current_time):
     """Function to plot the energy variables time evolution.
 
     Parameters
@@ -327,6 +419,10 @@ def plot_energy_evol(fig_num, energy_type, energy_res):
         Structured dataset of different energy variables time series
         (eroi, erde, net) for a given type of energy resource.
 
+    current_time : int
+        Specific time (by default associated to our current time)
+        where to plot a vertical line on the figures.
+
     """
 
     fig = plt.figure(figsize=(5, 8))
@@ -335,6 +431,7 @@ def plot_energy_evol(fig_num, energy_type, energy_res):
     # Top subplot 
     plt.subplot(4, 1, 1)
     plt.plot(energy_res['time'], energy_res['erde'], color='blue')
+    plt.plot(np.ones(int(np.max(energy_res['erde'])+1))*current_time, np.arange(int(np.max(energy_res['erde'])+1)), color='black',lw=0.5)
     plt.title('a) Energy Required to Deliver Energy', fontsize=10)
 #    plt.text(nb_cube_mod[-1]*0.5, alt[0]+1000, 'Total number of\ncasings within the\ntower : '+str(nb_cube_tower), fontsize=10)
     plt.ylabel('ERDE [energy unit]')
@@ -343,6 +440,7 @@ def plot_energy_evol(fig_num, energy_type, energy_res):
     # Middle upper subplot 
     plt.subplot(4, 1, 2)
     plt.plot(energy_res['time'], energy_res['gross'], color='black')
+    plt.plot(np.ones(int(np.max(energy_res['gross'])+1))*current_time, np.arange(int(np.max(energy_res['gross'])+1)), color='black',lw=0.5)
     plt.title('b) Gross Energy Production', fontsize=10)
     plt.ylabel('GEP [energy unit]')
     plt.xlabel('Time')
@@ -351,6 +449,7 @@ def plot_energy_evol(fig_num, energy_type, energy_res):
     plt.subplot(4, 1, 3)
     plt.plot(energy_res['time'], energy_res['eroi'], color='green')
     plt.plot(energy_res['time'], np.ones(len(energy_res['time'])), color='black', linewidth=0.5)
+    plt.plot(np.ones(int(np.max(energy_res['eroi'])+1))*current_time, np.arange(int(np.max(energy_res['eroi'])+1)), color='black',lw=0.5)
     plt.title('c) Energy Return On energy Investement', fontsize=10)
     plt.ylabel('EROI [no unit]')
     plt.xlabel('Time')
@@ -359,6 +458,7 @@ def plot_energy_evol(fig_num, energy_type, energy_res):
     plt.subplot(4, 1, 4)
     plt.plot(energy_res['time'], energy_res['net'], color='red')
     plt.plot(energy_res['time'], np.zeros(len(energy_res['time'])), color='black', linewidth=0.5)
+    plt.plot(np.ones(int(np.max(energy_res['net'])+1))*current_time, np.arange(int(np.max(energy_res['net'])+1)), color='black',lw=0.5)
     plt.title('d) Net Available Energy', fontsize=10)
     plt.ylabel('NAE [energy unit]')
     plt.xlabel('Time')
@@ -369,11 +469,13 @@ def plot_energy_evol(fig_num, energy_type, energy_res):
     # Save figure
     if energy_type == 'Finite':
         plt.savefig('Fig1_'+energy_type+'_EROI_simple_model.png')
-    else:
-        plt.savefig('Fig2_'+energy_type+'_EROI_simple_model.png')
+    elif energy_type == 'Infinite':
+        plt.savefig('Fig3_'+energy_type+'_EROI_simple_model.png')
+    elif energy_type == 'Coupled':
+        plt.savefig('Fig4_'+energy_type+'_EROI_simple_model.png')
+    
 
-
-def plot_ghg_evol(fig_num, ghg_atm):
+def plot_ghg_evol(fig_num, ghg_atm, current_time):
     """Function to plot the atmospheric and LTB profiles.
 
     Parameters
@@ -386,6 +488,10 @@ def plot_ghg_evol(fig_num, ghg_atm):
         Structured dataset of the different GHG variables time series
         (emis, conc).
 
+    current_time : int
+        Specific time (by default associated to our current time)
+        where to plot a vertical line on the figures.
+
     """
 
     fig = plt.figure(figsize=(5, 6))
@@ -394,6 +500,7 @@ def plot_ghg_evol(fig_num, ghg_atm):
     # Top subplot 
     plt.subplot(2, 1, 1)
     plt.plot(ghg_atm['time'], ghg_atm['emis'], color='black')
+    plt.plot(np.ones(int(np.max(ghg_atm['emis'])+1))*current_time, np.arange(int(np.max(ghg_atm['emis'])+1)), color='black',lw=0.5)
     plt.title('a) GreenHouse Gas Emissions in the atmosphere', fontsize=10)
     plt.ylabel('emissions [mass unit]')
     plt.xlabel('Time')
@@ -401,6 +508,7 @@ def plot_ghg_evol(fig_num, ghg_atm):
     # Bottom subplot
     plt.subplot(2, 1, 2)
     plt.plot(ghg_atm['time'], ghg_atm['conc'], color='red')
+    plt.plot(np.ones(int(np.max(ghg_atm['conc'])+1))*current_time, np.arange(int(np.max(ghg_atm['conc'])+1)), color='black',lw=0.5)
     plt.title('b) GreenHouse Gas Concentration in the atmosphere', fontsize=10)
     plt.ylabel('concentration [ppmv]')
     plt.xlabel('Time')
@@ -409,7 +517,7 @@ def plot_ghg_evol(fig_num, ghg_atm):
     plt.tight_layout()
     
     # Save figure
-    plt.savefig('Fig3_GHG_EROI_simple_model.png')
+    plt.savefig('Fig2_GHG_EROI_simple_model.png')
 
     
 def plot_case_study(fig_num, ghg_atm, inf_res, inf_res_var, inf_res_cc):
@@ -459,7 +567,7 @@ def plot_case_study(fig_num, ghg_atm, inf_res, inf_res_var, inf_res_cc):
     plt.title('b) Energy Required to Deliver Energy', fontsize=10)
     plt.ylabel('ERDE [energy unit]')
     plt.xlabel('Time')
-    plt.legend(fontsize=8)
+    plt.legend(loc='best', fontsize=7)
 
     # Middle lower subplot 
     plt.subplot(4, 1, 3)
@@ -470,7 +578,7 @@ def plot_case_study(fig_num, ghg_atm, inf_res, inf_res_var, inf_res_cc):
     plt.title('c) Energy Return On energy Investement', fontsize=10)
     plt.ylabel('EROI [no unit]')
     plt.xlabel('Time')
-    plt.legend(fontsize=8)
+    plt.legend(loc='best', fontsize=7)
     
     # Bottom subplot
     plt.subplot(4, 1, 4)
@@ -481,9 +589,9 @@ def plot_case_study(fig_num, ghg_atm, inf_res, inf_res_var, inf_res_cc):
     plt.title('d) Net Available Energy', fontsize=10)
     plt.ylabel('NAE [energy unit]')
     plt.xlabel('Time')    
-    plt.legend(fontsize=8)
+    plt.legend(loc='lower right', fontsize=7)
     
     plt.tight_layout()
     
     # Save figure
-    plt.savefig('Fig4_var+CC_EROI_simple_model.png')
+    plt.savefig('Fig5_var+CC_EROI_simple_model.png')
