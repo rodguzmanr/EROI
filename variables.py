@@ -68,7 +68,7 @@ fin_res_abun = 100
 ##############################################################
 
 # Time lag with respect to the beginning of the simulation
-inf_res_time_lag = 100 # 100, 150, 200
+inf_res_time_lag = 100 # case 1=100, case 2=150, 200
 
 #################   a) GEP hypotheses   #####################
 

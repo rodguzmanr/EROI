@@ -426,54 +426,53 @@ def plot_energy_evol(fig_num, energy_type, energy_res, current_time):
 
     """
 
-    fig = plt.figure(figsize=(5, 8))
-    plt.suptitle(fig_num+': '+energy_type+' energy resource time evolution', fontsize=12)
+    fig = plt.figure(figsize=(5, 7))
+    plt.suptitle(fig_num+': évolution temporelle du SAE '+energy_type, fontsize=12)
     
-    # Top subplot 
-    plt.subplot(4, 1, 1)
-    plt.plot(energy_res['time'], energy_res['erde'], color='blue')
-    plt.plot(np.ones(int(np.max(energy_res['erde'])+1))*current_time, np.arange(int(np.max(energy_res['erde'])+1)), color='black',lw=0.5)
-    plt.title('a) Energy Required to Deliver Energy', fontsize=10)
-#    plt.text(nb_cube_mod[-1]*0.5, alt[0]+1000, 'Total number of\ncasings within the\ntower : '+str(nb_cube_tower), fontsize=10)
-    plt.ylabel('ERDE [energy unit]')
-    plt.xlabel('Time')
-
-    # Middle upper subplot 
-    plt.subplot(4, 1, 2)
+    # Top subplot
+    plt.subplot(3, 1, 1)
     plt.plot(energy_res['time'], energy_res['gross'], color='black')
     plt.plot(np.ones(int(np.max(energy_res['gross'])+1))*current_time, np.arange(int(np.max(energy_res['gross'])+1)), color='black',lw=0.5)
-    plt.title('b) Gross Energy Production', fontsize=10)
-    plt.ylabel('GEP [energy unit]')
-    plt.xlabel('Time')
-
-    # Middle lower subplot 
-    plt.subplot(4, 1, 3)
-    plt.plot(energy_res['time'], energy_res['eroi'], color='green')
-    plt.plot(energy_res['time'], np.ones(len(energy_res['time'])), color='black', linewidth=0.5)
-    plt.plot(np.ones(int(np.max(energy_res['eroi'])+1))*current_time, np.arange(int(np.max(energy_res['eroi'])+1)), color='black',lw=0.5)
-    plt.title('c) Energy Return On energy Investment', fontsize=10)
-    plt.ylabel('EROI [no unit]')
-    plt.xlabel('Time')
+    plt.title("a) Production Totale d'Energie", fontsize=10)
+    plt.ylabel("PTE [unité d'énergie]")
+    plt.xlabel('Temps')
     
+    # Middle subplot 
+    plt.subplot(3, 1, 2)
+    plt.plot(energy_res['time'], energy_res['erde'], color='blue')
+    plt.plot(np.ones(int(np.max(energy_res['erde'])+1))*current_time, np.arange(int(np.max(energy_res['erde'])+1)), color='black',lw=0.5)
+    plt.title("b) Energie Requise pour Distribuer l'Energie", fontsize=10)
+    plt.ylabel("ERDE [unité d'énergie]")
+    plt.xlabel('Temps')
+
     # Bottom subplot
-    plt.subplot(4, 1, 4)
+    plt.subplot(3, 1, 3)
     plt.plot(energy_res['time'], energy_res['net'], color='red')
     plt.plot(energy_res['time'], np.zeros(len(energy_res['time'])), color='black', linewidth=0.5)
     plt.plot(np.ones(int(np.max(energy_res['net'])+1))*current_time, np.arange(int(np.max(energy_res['net'])+1)), color='black',lw=0.5)
-    plt.title('d) Net Available Energy', fontsize=10)
-    plt.ylabel('NAE [energy unit]')
-    plt.xlabel('Time')
+    plt.title('c) Energies Nette Disponible', fontsize=10)
+    plt.ylabel("END [unité d'énergie]")
+    plt.xlabel('Temps')
+
+    # EROI subplot 
+#    plt.subplot(4, 1, 3)
+#    plt.plot(energy_res['time'], energy_res['eroi'], color='green')
+#    plt.plot(energy_res['time'], np.ones(len(energy_res['time'])), color='black', linewidth=0.5)
+#    plt.plot(np.ones(int(np.max(energy_res['eroi'])+1))*current_time, np.arange(int(np.max(energy_res['eroi'])+1)), color='black',lw=0.5)
+#    plt.title('c) Energy Return On energy Investment', fontsize=10)
+#    plt.ylabel('EROI [no unit]')
+#    plt.xlabel('Time')
 
 #    plt.legend(fontsize=9)
     plt.tight_layout()
     
     # Save figure
-    if energy_type == 'Finite':
-        plt.savefig('Fig1_'+energy_type+'_EROI_simple_model.png')
-    elif energy_type == 'Infinite':
-        plt.savefig('Fig3_'+energy_type+'_EROI_simple_model.png')
-    elif energy_type == 'Coupled':
-        plt.savefig('Fig5_'+energy_type+'_EROI_simple_model.png')
+    if energy_type == 'non durable':
+        plt.savefig('Fig2_SAE_'+energy_type[:3]+'_'+energy_type[-7:]+'_EROI_simple_model.png')
+    elif energy_type == 'durable':
+        plt.savefig('Fig4_SAE_'+energy_type+'_EROI_simple_model.png')
+    elif energy_type == 'en transition':
+        plt.savefig('Fig6_SAE_'+energy_type[-10:]+'_EROI_simple_model.png')
     
 
 def plot_ghg_evol(fig_num, ghg_atm, current_time):
@@ -496,29 +495,29 @@ def plot_ghg_evol(fig_num, ghg_atm, current_time):
     """
 
     fig = plt.figure(figsize=(5, 6))
-    plt.suptitle(fig_num+': Time evolution of the GHG variables', fontsize=12)
+    plt.suptitle(fig_num+': évolution temporelle des variables du GES', fontsize=12)
     
     # Top subplot 
     plt.subplot(2, 1, 1)
     plt.plot(ghg_atm['time'], ghg_atm['emis'], color='black')
     plt.plot(np.ones(int(np.max(ghg_atm['emis'])+1))*current_time, np.arange(int(np.max(ghg_atm['emis'])+1)), color='black',lw=0.5)
-    plt.title('a) GreenHouse Gas Emissions in the atmosphere', fontsize=10)
-    plt.ylabel('Emissions [mass unit]')
-    plt.xlabel('Time')
+    plt.title("a) Emissions du GES dans l'atmosphère", fontsize=10)
+    plt.ylabel('Emissions [unité de masse]')
+    plt.xlabel('Temps')
     
     # Bottom subplot
     plt.subplot(2, 1, 2)
     plt.plot(ghg_atm['time'], ghg_atm['conc'], color='red')
     plt.plot(np.ones(int(np.max(ghg_atm['conc'])-ghg_atm['conc'][0]))*current_time, np.arange(int(np.max(ghg_atm['conc']-ghg_atm['conc'][0])))+ghg_atm['conc'][0], color='black',lw=0.5)
-    plt.title('b) GreenHouse Gas Concentration in the atmosphere', fontsize=10)
+    plt.title("b) Concentration du GES dans l'atmosphère", fontsize=10)
     plt.ylabel('Concentration [ppmv]')
-    plt.xlabel('Time')
+    plt.xlabel('Temps')
 
 #    plt.legend(fontsize=9)
     plt.tight_layout()
     
     # Save figure
-    plt.savefig('Fig2_GHG_EROI_simple_model.png')
+    plt.savefig('Fig3_GES_EROI_simple_model.png')
 
 
 def plot_inf_res_var(fig_num, energy_type, energy_res, energy_res_var, current_time):
@@ -547,59 +546,58 @@ def plot_inf_res_var(fig_num, energy_type, energy_res, energy_res_var, current_t
 
     """
 
-    fig = plt.figure(figsize=(5, 8))
-    plt.suptitle(fig_num+': '+energy_type+' energy resource time evolution', fontsize=12)
-    
+    fig = plt.figure(figsize=(5, 7))
+    plt.suptitle(fig_num+': évolution temporelle du SAE '+energy_type+'\navec variabilité naturelle', fontsize=12)
+
     # Top subplot 
-    plt.subplot(4, 1, 1)
-    plt.plot(energy_res['time'], energy_res['erde'], color='blue', label='Ideal')
-    plt.plot(energy_res_var['time'], energy_res_var['erde'], '--', color='blue', label='Natural variability')    
-    plt.plot(np.ones(int(np.max(energy_res['erde'])+1))*current_time, np.arange(int(np.max(energy_res['erde'])+1)), color='black',lw=0.5)
-    plt.title('a) Energy Required to Deliver Energy', fontsize=10)
-#    plt.text(nb_cube_mod[-1]*0.5, alt[0]+1000, 'Total number of\ncasings within the\ntower : '+str(nb_cube_tower), fontsize=10)
-    plt.ylabel('ERDE [energy unit]')
-    plt.xlabel('Time')
-    plt.legend(loc='upper right', fontsize=7)
-
-    # Middle upper subplot 
-    plt.subplot(4, 1, 2)
-    plt.plot(energy_res['time'], energy_res['gross'], color='black', label='Ideal')
-    plt.plot(energy_res_var['time'], energy_res_var['gross'], '--', color='black', label='Natural variability')    
+    plt.subplot(3, 1, 1)
+    plt.plot(energy_res['time'], energy_res['gross'], color='black', label='Idéal')
+    plt.plot(energy_res_var['time'], energy_res_var['gross'], '--', color='black', label='Variabilité naturelle')    
     plt.plot(np.ones(int(np.max(energy_res['gross'])+1))*current_time, np.arange(int(np.max(energy_res['gross'])+1)), color='black',lw=0.5)
-    plt.title('b) Gross Energy Production', fontsize=10)
-    plt.ylabel('GEP [energy unit]')
-    plt.xlabel('Time')
-
-    # Middle lower subplot 
-    plt.subplot(4, 1, 3)
-    plt.plot(energy_res['time'], energy_res['eroi'], color='green', label='Ideal')
-    plt.plot(energy_res_var['time'], energy_res_var['eroi'], '--', color='green', label='Natural variability')    
-    plt.plot(energy_res['time'], np.ones(len(energy_res['time'])), color='black', linewidth=0.5)
-    plt.plot(np.ones(int(np.max(energy_res['eroi'])+1))*current_time, np.arange(int(np.max(energy_res['eroi'])+1)), color='black',lw=0.5)
-    plt.title('c) Energy Return On energy Investment', fontsize=10)
-    plt.ylabel('EROI [no unit]')
-    plt.xlabel('Time')
-    plt.legend(loc='lower right', fontsize=7)
+    plt.title("a) Production Totale d'Energie", fontsize=10)
+    plt.ylabel("PTE [unité d'énergie]")
+    plt.xlabel('Temps')
+    
+    # Middle subplot 
+    plt.subplot(3, 1, 2)
+    plt.plot(energy_res['time'], energy_res['erde'], color='blue', label='Idéal')
+    plt.plot(energy_res_var['time'], energy_res_var['erde'], '--', color='blue', label='Variabilité naturelle')    
+    plt.plot(np.ones(int(np.max(energy_res_var['erde'])+1))*current_time, np.arange(int(np.max(energy_res_var['erde'])+1)), color='black',lw=0.5)
+    plt.title("b) Energie Requise pour Distribuer l'Energie", fontsize=10)
+    plt.ylabel("ERDE [unité d'énergie]")
+    plt.xlabel('Temps')
+    plt.legend(loc='upper right', fontsize=7)
     
     # Bottom subplot
-    plt.subplot(4, 1, 4)
-    plt.plot(energy_res['time'], energy_res['net'], color='red', label='Ideal')
-    plt.plot(energy_res_var['time'], energy_res_var['net'], '--', color='red', label='Natural variability')    
+    plt.subplot(3, 1, 3)
+    plt.plot(energy_res['time'], energy_res['net'], color='red', label='Idéal')
+    plt.plot(energy_res_var['time'], energy_res_var['net'], '--', color='red', label='Variabilité naturelle')    
     plt.plot(energy_res['time'], np.zeros(len(energy_res['time'])), color='black', linewidth=0.5)
     plt.plot(np.ones(int(np.max(energy_res['net'])+1))*current_time, np.arange(int(np.max(energy_res['net'])+1)), color='black',lw=0.5)
-    plt.title('d) Net Available Energy', fontsize=10)
-    plt.ylabel('NAE [energy unit]')
-    plt.xlabel('Time')
+    plt.title("c) Energie Nette Disponible", fontsize=10)
+    plt.ylabel("END [unité d'énergie]")
+    plt.xlabel('Temps')
     plt.legend(loc='lower right', fontsize=7)
+    
+    # EROI subplot
+#    plt.subplot(4, 1, 3)
+#    plt.plot(energy_res['time'], energy_res['eroi'], color='green', label='Ideal')
+#    plt.plot(energy_res_var['time'], energy_res_var['eroi'], '--', color='green', label='Natural variability')    
+#    plt.plot(energy_res['time'], np.ones(len(energy_res['time'])), color='black', linewidth=0.5)
+#    plt.plot(np.ones(int(np.max(energy_res['eroi'])+1))*current_time, np.arange(int(np.max(energy_res['eroi'])+1)), color='black',lw=0.5)
+#    plt.title('c) Energy Return On energy Investment', fontsize=10)
+#    plt.ylabel('EROI [no unit]')
+#    plt.xlabel('Time')
+#    plt.legend(loc='lower right', fontsize=7)
     
     plt.tight_layout()
     
     # Save figure
-    plt.savefig('Fig4_'+energy_type+'_var_EROI_simple_model.png')
+    plt.savefig('Fig5_SAE_'+energy_type+'+VN_EROI_simple_model.png')
 
     
     
-def plot_case_study(fig_num, ghg_atm, inf_res, inf_res_var, inf_res_cc):
+def plot_case_study(fig_num, case_num, ghg_atm, inf_res, inf_res_var, inf_res_cc, current_time):
     """Function to plot the different Idealized scenarios.
 
     Parameters
@@ -607,6 +605,9 @@ def plot_case_study(fig_num, ghg_atm, inf_res, inf_res_var, inf_res_cc):
 
     fig_num : str
         Suptitle's first word, figure number.
+
+    case_num : str
+        Case study number.
 
     ghg_atm : DataFrame (Python pandas object)
         Structured dataset of the different GHG variables time series
@@ -626,51 +627,59 @@ def plot_case_study(fig_num, ghg_atm, inf_res, inf_res_var, inf_res_cc):
         for an infinite energy resource influenced by both the 
         natural atmospheric variability and climate change.
 
+    current_time : int
+        Specific time (by default associated to our current time)
+        where to plot a vertical line on the figures.
+
     """
 
-    fig = plt.figure(figsize=(6, 8))
-    plt.suptitle(fig_num+': Time evolution of the GHG concentration\nand its influence on ERDE, EROI and Net energy production', fontsize=12)
+    fig = plt.figure(figsize=(5, 8))
+    plt.suptitle(fig_num+': évolution temporelle de la concentration du GES\net son influence sur ERDE et END', fontsize=12)
         
     # Top subplot
     plt.subplot(4, 1, 1)
     plt.plot(ghg_atm['time'], ghg_atm['conc'], color='red')
-    plt.title('a) GreenHouse Gas Concentration in the atmosphere', fontsize=10)
+    plt.plot(np.ones(int(np.max(ghg_atm['conc'])-ghg_atm['conc'][0]))*current_time, np.arange(int(np.max(ghg_atm['conc']-ghg_atm['conc'][0])))+ghg_atm['conc'][0], color='black',lw=0.5)
+    plt.title("a) Concentration du GES dans l'atmosphère", fontsize=10)
     plt.ylabel('Concentration [ppmv]')
-    plt.xlabel('Time')
+    plt.xlabel('Temps')
 
     # Middle upper subplot 
     plt.subplot(4, 1, 2)
-    plt.plot(inf_res['time'], inf_res['erde'], color='blue', label='Ideal')
-    plt.plot(inf_res_var['time'], inf_res_var['erde'], '--', color='blue', label='Natural variability')
-    plt.plot(inf_res_cc['time'], inf_res_cc['erde'], '-.', color='blue', label='Climate Change')
-    plt.title('b) Energy Required to Deliver Energy', fontsize=10)
-    plt.ylabel('ERDE [energy unit]')
-    plt.xlabel('Time')
+    plt.plot(inf_res['time'], inf_res['gross'], color='black', label='Idéal')
+    plt.plot(np.ones(int(np.max(inf_res['gross'])+1))*current_time, np.arange(int(np.max(inf_res['gross'])+1)), color='black',lw=0.5)
+    plt.title("b) Production Totale d'Energie", fontsize=10)
+    plt.ylabel("PTE [unité d'énergie]")
+    plt.xlabel('Temps')
     plt.legend(loc='best', fontsize=7)
 
     # Middle lower subplot 
     plt.subplot(4, 1, 3)
-    plt.plot(inf_res['time'], inf_res['eroi'], color='green', label='Ideal')
-    plt.plot(inf_res_var['time'], inf_res_var['eroi'], '--', color='green', label='Natural variability')
-    plt.plot(inf_res_cc['time'], inf_res_cc['eroi'], '-.', color='green', label='Climate Change')
-    plt.plot(inf_res['time'], np.ones(len(inf_res['time'])), color='black', linewidth=0.5)
-    plt.title('c) Energy Return On energy Investment', fontsize=10)
-    plt.ylabel('EROI [no unit]')
-    plt.xlabel('Time')
+    plt.plot(inf_res['time'], inf_res['erde'], color='blue', label='Idéal')
+    plt.plot(inf_res_var['time'], inf_res_var['erde'], '--', color='blue', label='Variabilité naturelle')
+    plt.plot(inf_res_cc['time'], inf_res_cc['erde'], '-.', color='blue', label='Dérèglement climatique')
+    plt.plot(np.ones(int(np.max(inf_res_cc['erde'])+1))*current_time, np.arange(int(np.max(inf_res_cc['erde'])+1)), color='black',lw=0.5)
+    plt.title("c) Energie Requise pour Distribuer l'Energie", fontsize=10)
+    plt.ylabel("ERDE [unité d'énergie]")
+    plt.xlabel('Temps')
     plt.legend(loc='best', fontsize=7)
     
     # Bottom subplot
     plt.subplot(4, 1, 4)
-    plt.plot(inf_res['time'], inf_res['net'], color='red', label='Ideal')
-    plt.plot(inf_res_var['time'], inf_res_var['net'], '--', color='red', label='Natural variability')
-    plt.plot(inf_res_cc['time'], inf_res_cc['net'], '-.', color='red', label='Climate Change')
+    plt.plot(inf_res['time'], inf_res['net'], color='red', label='Idéal')
+    plt.plot(inf_res_var['time'], inf_res_var['net'], '--', color='red', label='Variabilité naturelle')
+    plt.plot(inf_res_cc['time'], inf_res_cc['net'], '-.', color='red', label='Dérèglement climatique')
     plt.plot(inf_res['time'], np.zeros(len(inf_res['time'])), color='black', linewidth=0.5)
-    plt.title('d) Net Available Energy', fontsize=10)
-    plt.ylabel('NAE [energy unit]')
-    plt.xlabel('Time')    
+    plt.plot(np.ones(int(np.max(inf_res_cc['net'])+1))*current_time, np.arange(int(np.max(inf_res_cc['net'])+1)), color='black',lw=0.5)
+    plt.title('d) Energie Nette Disponible', fontsize=10)
+    plt.ylabel("END [unité d'énergie]")
+    plt.xlabel('Temps')    
     plt.legend(loc='lower right', fontsize=7)
     
     plt.tight_layout()
     
     # Save figure
-    plt.savefig('Fig6_var+CC_EROI_simple_model.png')
+    if case_num=='case 1':
+        plt.savefig('Fig7_SAE_transition+VN+DC_EROI_simple_model.png')
+    if case_num=='case 2':
+        plt.savefig('Fig8_SAE_transition+VN+DC+decalage_EROI_simple_model.png')

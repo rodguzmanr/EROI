@@ -119,23 +119,26 @@ if __name__ == "__main__":
     ######################################
     
     # Ploting energy variables time evolution for a finite energy
-    func.plot_energy_evol('Figure 1', 'Finite', fin_res, var.current_time)
+    func.plot_energy_evol('Figure 2', 'non durable', fin_res, var.current_time)
 
     # Ploting GHG time evolution for the GHG-emitting
     # finite energy resource
-    func.plot_ghg_evol('Figure 2', ghg_atm, var.current_time)
+    func.plot_ghg_evol('Figure 3', ghg_atm, var.current_time)
 
     # Ploting energy variables time evolution for
     # an infinite energy resource
-    func.plot_energy_evol('Figure 3', 'Infinite', inf_res_lag, var.current_time)
+    func.plot_energy_evol('Figure 4', 'durable', inf_res_lag, var.current_time)
 
     # Ploting energy variables time evolution for
     # an infinite energy resource + natural variability
-    func.plot_inf_res_var('Figure 4', 'Infinite', inf_res_lag, inf_res_var, var.current_time)
+    func.plot_inf_res_var('Figure 5', 'durable', inf_res_lag, inf_res_var, var.current_time)
 
     # Ploting energy variables time evolution for an energy system
     # in transition from finite to infinite energy resources
-    func.plot_energy_evol('Figure 5', 'Coupled', coupled_res, var.current_time)
+    func.plot_energy_evol('Figure 6', 'en transition', coupled_res, var.current_time)
     
-    # Ploting infinite energy eroi with uncertainties
-    func.plot_case_study('Figure 6', ghg_atm, coupled_res, coupled_res_var, coupled_res_cc)
+    # Ploting infinite energy eroi with uncertainties (case 1 or 2)
+    if var.inf_res_time_lag==100:
+        func.plot_case_study('Figure 7', 'case 1', ghg_atm, coupled_res, coupled_res_var, coupled_res_cc, var.current_time)
+    else:
+        func.plot_case_study('Figure 8', 'case 2', ghg_atm, coupled_res, coupled_res_var, coupled_res_cc, var.current_time)
