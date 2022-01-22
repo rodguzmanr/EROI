@@ -140,7 +140,7 @@ ghg_emis_intens = 100
 
 # GHG disintegration constant, arbitrary quantity measuring
 # how slowly the GHG gets caught up by natural sinks 
-ghg_disint_cst = 4e5
+ghg_disint_cst = 5e5
 
 # Preindustrial GHG concentration, arbitrary quantity defining
 # how much GHG was in the atmosphere before starting to consume
@@ -149,7 +149,7 @@ ghg_preind_conc = 280
 
 # Constant estimating the impact on the environment caused by
 # the GHG concentration increase in the atmosphere
-ghg_impact_factor = 0.2
+ghg_impact_factor = 0.1
 
 ##############################################################
 ####   IV - Current renewable energy sources case study   ####
