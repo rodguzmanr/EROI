@@ -272,7 +272,7 @@ def compute_ghg_atm(ghg_atm, fin_res, ghg_max_unit_emis, ghg_emis_intens, ghg_di
     ghg_atm.loc[0, 'conc'] = ghg_preind_conc
     # Recursive computation for the full time series
     for i in ghg_atm['time'][1:]:
-        ghg_atm.loc[i, 'conc'] = ghg_atm.loc[i-1, 'conc']*np.exp(-ghg_atm.loc[i-1, 'time']/ghg_disint_cst) + ghg_atm.loc[i, 'emis']
+        ghg_atm.loc[i, 'conc'] = ghg_atm.loc[i-1, 'conc']*np.exp(-(ghg_atm.loc[i-1, 'conc']-ghg_preind_conc)/ghg_disint_cst) + ghg_atm.loc[i, 'emis']
     
     return ghg_atm
 
@@ -450,7 +450,7 @@ def plot_energy_evol(fig_num, energy_type, energy_res, current_time):
     plt.plot(energy_res['time'], energy_res['net'], color='red')
     plt.plot(energy_res['time'], np.zeros(len(energy_res['time'])), color='black', linewidth=0.5)
     plt.plot(np.ones(int(np.max(energy_res['net'])+1))*current_time, np.arange(int(np.max(energy_res['net'])+1)), color='black',lw=0.5)
-    plt.title('c) Energies Nette Disponible', fontsize=10)
+    plt.title('c) Energie Nette Disponible', fontsize=10)
     plt.ylabel("END [unité d'énergie]")
     plt.xlabel('Temps')
 
@@ -634,7 +634,7 @@ def plot_case_study(fig_num, case_num, ghg_atm, inf_res, inf_res_var, inf_res_cc
     """
 
     fig = plt.figure(figsize=(5, 8))
-    plt.suptitle(fig_num+': évolution temporelle de la concentration du GES\net son influence sur ERDE et END', fontsize=12)
+    plt.suptitle(fig_num+": scénario complet de l'évolution\ntemporelle du SAE global en transition", fontsize=12)
         
     # Top subplot
     plt.subplot(4, 1, 1)

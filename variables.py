@@ -138,7 +138,7 @@ ghg_emis_intens = 100
 # having an exponential decrease driven by a disintegration
 # constant.
 
-# GHG disintegration constant, arbitrary quantity measuring
+# GHG desintegration constant, arbitrary quantity measuring
 # how slowly the GHG gets caught up by natural sinks 
 ghg_disint_cst = 5e5
 
