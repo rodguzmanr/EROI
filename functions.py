@@ -272,7 +272,7 @@ def compute_ghg_atm(ghg_atm, fin_res, ghg_max_unit_emis, ghg_emis_intens, ghg_di
     ghg_atm.loc[0, 'conc'] = ghg_preind_conc
     # Recursive computation for the full time series
     for i in ghg_atm['time'][1:]:
-        ghg_atm.loc[i, 'conc'] = ghg_atm.loc[i-1, 'conc']*np.exp(-ghg_atm.loc[i-1, 'time']/ghg_disint_cst) + ghg_atm.loc[i, 'emis']
+        ghg_atm.loc[i, 'conc'] = ghg_atm.loc[i-1, 'conc']*np.exp(-(ghg_atm.loc[i-1, 'conc']-ghg_preind_conc)/ghg_disint_cst) + ghg_atm.loc[i, 'emis']
     
     return ghg_atm
 
