@@ -20,6 +20,7 @@ import pandas as pd
 import variables as var
 import functions as func
 
+
 if __name__ == "__main__":
     """Script to compute main features of the EROI simple model.
 
@@ -106,12 +107,16 @@ if __name__ == "__main__":
     #####  VI - Non-renewable and renewable coupled scenario  ####
     ##############################################################
 
+    # Compute all the energy variables (erde, gross, eroi and net)
+    # for the ideal simulation
     coupled_res = func.compute_coupled_res(coupled_res, fin_res, inf_res_lag)
     
     # Compute all the energy variables (erde, gross, eroi and net)
+    # for the natural variability simulation
     coupled_res_var = func.compute_coupled_res(coupled_res_var, fin_res, inf_res_var)
     
     # Compute all the energy variables (erde, gross, eroi and net)
+    # for the natural variability + climate change simulation
     coupled_res_cc = func.compute_coupled_res(coupled_res_cc, fin_res, inf_res_cc)
 
     ######################################
@@ -142,3 +147,4 @@ if __name__ == "__main__":
         func.plot_case_study('Figure 7', 'case 1', ghg_atm, coupled_res, coupled_res_var, coupled_res_cc, var.current_time)
     else:
         func.plot_case_study('Figure 8', 'case 2', ghg_atm, coupled_res, coupled_res_var, coupled_res_cc, var.current_time)
+        

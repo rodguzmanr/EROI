@@ -551,7 +551,7 @@ def plot_inf_res_var(fig_num, energy_type, energy_res, energy_res_var, current_t
 
     # Top subplot 
     plt.subplot(3, 1, 1)
-    plt.plot(energy_res['time'], energy_res['gross'], color='black', label='Idéal')
+    plt.plot(energy_res['time'], energy_res['gross'], color='black', label='Idéale')
     plt.plot(energy_res_var['time'], energy_res_var['gross'], '--', color='black', label='Variabilité naturelle')    
     plt.plot(np.ones(int(np.max(energy_res['gross'])+1))*current_time, np.arange(int(np.max(energy_res['gross'])+1)), color='black',lw=0.5)
     plt.title("a) Production Totale d'Energie", fontsize=10)
@@ -560,7 +560,7 @@ def plot_inf_res_var(fig_num, energy_type, energy_res, energy_res_var, current_t
     
     # Middle subplot 
     plt.subplot(3, 1, 2)
-    plt.plot(energy_res['time'], energy_res['erde'], color='blue', label='Idéal')
+    plt.plot(energy_res['time'], energy_res['erde'], color='blue', label='Idéale')
     plt.plot(energy_res_var['time'], energy_res_var['erde'], '--', color='blue', label='Variabilité naturelle')    
     plt.plot(np.ones(int(np.max(energy_res_var['erde'])+1))*current_time, np.arange(int(np.max(energy_res_var['erde'])+1)), color='black',lw=0.5)
     plt.title("b) Energie Requise pour Distribuer l'Energie", fontsize=10)
@@ -570,7 +570,7 @@ def plot_inf_res_var(fig_num, energy_type, energy_res, energy_res_var, current_t
     
     # Bottom subplot
     plt.subplot(3, 1, 3)
-    plt.plot(energy_res['time'], energy_res['net'], color='red', label='Idéal')
+    plt.plot(energy_res['time'], energy_res['net'], color='red', label='Idéale')
     plt.plot(energy_res_var['time'], energy_res_var['net'], '--', color='red', label='Variabilité naturelle')    
     plt.plot(energy_res['time'], np.zeros(len(energy_res['time'])), color='black', linewidth=0.5)
     plt.plot(np.ones(int(np.max(energy_res['net'])+1))*current_time, np.arange(int(np.max(energy_res['net'])+1)), color='black',lw=0.5)
@@ -634,7 +634,10 @@ def plot_case_study(fig_num, case_num, ghg_atm, inf_res, inf_res_var, inf_res_cc
     """
 
     fig = plt.figure(figsize=(5, 8))
-    plt.suptitle(fig_num+": scénario complet de l'évolution\ntemporelle du SAE global en transition", fontsize=12)
+    if case_num=='case 1':
+        plt.suptitle(fig_num+": scénario complet de l'évolution\ntemporelle du SAE global en transition", fontsize=12)
+    if case_num=='case 2':
+    	plt.suptitle(fig_num+": scénario complet de l'évolution\ntemporelle du SAE global en transition tardive", fontsize=12)
         
     # Top subplot
     plt.subplot(4, 1, 1)
@@ -646,7 +649,7 @@ def plot_case_study(fig_num, case_num, ghg_atm, inf_res, inf_res_var, inf_res_cc
 
     # Middle upper subplot 
     plt.subplot(4, 1, 2)
-    plt.plot(inf_res['time'], inf_res['gross'], color='black', label='Idéal')
+    plt.plot(inf_res['time'], inf_res['gross'], color='black', label='Idéale')
     plt.plot(np.ones(int(np.max(inf_res['gross'])+1))*current_time, np.arange(int(np.max(inf_res['gross'])+1)), color='black',lw=0.5)
     plt.title("b) Production Totale d'Energie", fontsize=10)
     plt.ylabel("PTE [unité d'énergie]")
@@ -655,7 +658,7 @@ def plot_case_study(fig_num, case_num, ghg_atm, inf_res, inf_res_var, inf_res_cc
 
     # Middle lower subplot 
     plt.subplot(4, 1, 3)
-    plt.plot(inf_res['time'], inf_res['erde'], color='blue', label='Idéal')
+    plt.plot(inf_res['time'], inf_res['erde'], color='blue', label='Idéale')
     plt.plot(inf_res_var['time'], inf_res_var['erde'], '--', color='blue', label='Variabilité naturelle')
     plt.plot(inf_res_cc['time'], inf_res_cc['erde'], '-.', color='blue', label='Dérèglement climatique')
     plt.plot(np.ones(int(np.max(inf_res_cc['erde'])+1))*current_time, np.arange(int(np.max(inf_res_cc['erde'])+1)), color='black',lw=0.5)
@@ -666,7 +669,7 @@ def plot_case_study(fig_num, case_num, ghg_atm, inf_res, inf_res_var, inf_res_cc
     
     # Bottom subplot
     plt.subplot(4, 1, 4)
-    plt.plot(inf_res['time'], inf_res['net'], color='red', label='Idéal')
+    plt.plot(inf_res['time'], inf_res['net'], color='red', label='Idéale')
     plt.plot(inf_res_var['time'], inf_res_var['net'], '--', color='red', label='Variabilité naturelle')
     plt.plot(inf_res_cc['time'], inf_res_cc['net'], '-.', color='red', label='Dérèglement climatique')
     plt.plot(inf_res['time'], np.zeros(len(inf_res['time'])), color='black', linewidth=0.5)
@@ -683,3 +686,4 @@ def plot_case_study(fig_num, case_num, ghg_atm, inf_res, inf_res_var, inf_res_cc
         plt.savefig('Fig7_SAE_transition+VN+DC_EROI_simple_model.png')
     if case_num=='case 2':
         plt.savefig('Fig8_SAE_transition+VN+DC+decalage_EROI_simple_model.png')
+
